@@ -10,6 +10,7 @@ import {
     updateNotificationSettings,
     forgotPassword,
     resetPassword,
+    seedDemoData,
 } from '../controllers/authController.js';
 import passport from 'passport';
 import express from 'express';
@@ -104,4 +105,5 @@ AuthRouter.delete('/account', authMiddleware, deleteAccount);
 AuthRouter.patch('/password', authMiddleware, changePassword);
 AuthRouter.patch('/profile', authMiddleware, updateProfile);
 AuthRouter.patch('/settings/notifications', authMiddleware, updateNotificationSettings);
+AuthRouter.post('/seed-demo', authMiddleware, seedDemoData);
 export default AuthRouter;
