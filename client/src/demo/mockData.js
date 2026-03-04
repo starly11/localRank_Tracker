@@ -1,4 +1,18 @@
-const DEMO_MODE = String(import.meta.env.VITE_DEMO_MODE || 'true').toLowerCase() !== 'false'
+const resolveDemoMode = () => {
+  if (typeof window !== 'undefined') {
+    const urlFlag = new URLSearchParams(window.location.search).get('demo')
+    if (urlFlag === '1' || urlFlag === 'true') return true
+    if (urlFlag === '0' || urlFlag === 'false') return false
+
+    const localOverride = String(localStorage.getItem('lrt_demo_mode') || '').toLowerCase().trim()
+    if (localOverride === 'true') return true
+    if (localOverride === 'false') return false
+  }
+
+  return String(import.meta.env.VITE_DEMO_MODE || 'true').toLowerCase() !== 'false'
+}
+
+const DEMO_MODE = resolveDemoMode()
 
 const daysAgoIso = (days, hour = 11) => {
   const date = new Date()

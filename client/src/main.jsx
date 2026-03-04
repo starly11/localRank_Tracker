@@ -11,6 +11,22 @@ import './index.css'
 import { App } from './App.jsx'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
+import { isDemoModeEnabled } from './demo/mockData'
+
+if (typeof window !== 'undefined') {
+  window.__LRT_DEBUG__ = {
+    demoMode: isDemoModeEnabled(),
+    apiUrl: import.meta.env.VITE_API_URL || '(not set)',
+    toggleDemo(on) {
+      localStorage.setItem('lrt_demo_mode', on ? 'true' : 'false')
+      window.location.reload()
+    },
+    clearDemoOverride() {
+      localStorage.removeItem('lrt_demo_mode')
+      window.location.reload()
+    },
+  }
+}
 
 createRoot(document.getElementById('root')).render(
   <QueryClientProvider client={queryClient}>
