@@ -25,21 +25,40 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 // CORS setup - explicitly whitelist frontend origin(s)
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:3000')
   .split(',')
   .map((value) => value.trim())
   .filter(Boolean);
 
-const allowedOriginRegex = process.env.CLIENT_ORIGIN_REGEX
-  ? new RegExp(process.env.CLIENT_ORIGIN_REGEX)
-  : /^https:\/\/.*\.vercel\.app$/i;
+const defaultAllowedOriginRegexList = [
+  /^https:\/\/.*\.vercel\.app$/i,
+  /^https:\/\/.*\.onrender\.com$/i,
+  /^http:\/\/localhost:\d+$/i,
+  /^http:\/\/127\.0\.0\.1:\d+$/i,
+];
+
+const configuredOriginRegexList = String(process.env.CLIENT_ORIGIN_REGEX || '')
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean)
+  .map((value) => {
+    try {
+      return new RegExp(value);
+    } catch {
+      return null;
+    }
+  })
+  .filter(Boolean);
+
+const allowedOriginRegexList =
+  configuredOriginRegexList.length > 0 ? configuredOriginRegexList : defaultAllowedOriginRegexList;
 
 app.use(
   cors({
     origin(origin, callback) {
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
-      if (allowedOriginRegex.test(origin)) return callback(null, true);
+      if (allowedOriginRegexList.some((regex) => regex.test(origin))) return callback(null, true);
       return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,

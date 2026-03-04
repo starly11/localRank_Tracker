@@ -207,11 +207,15 @@ export const ensureDemoDataForUser = async ({ userId, force = false } = {}) => {
   }
 
   if (!force) {
-    const existingBusinessCount = await Business.countDocuments({ userId: normalizedUserId });
-    if (existingBusinessCount > 0) {
+    const existingDemoBusinessCount = await Business.countDocuments({
+      userId: normalizedUserId,
+      googlePlaceId: { $in: demoBusinessesTemplate.map((item) => item.googlePlaceId) },
+    });
+
+    if (existingDemoBusinessCount > 0) {
       return {
         seeded: false,
-        reason: 'already_has_data',
+        reason: 'already_seeded',
         businessesCreated: 0,
       };
     }
