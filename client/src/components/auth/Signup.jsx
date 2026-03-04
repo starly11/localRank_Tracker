@@ -6,6 +6,7 @@ import toast from "react-hot-toast"
 
 import { googleLoginApi } from "@/api/authApi"
 import { useSignupApi } from "@/hooks/auth/useSignupApi"
+import { isDemoModeEnabled } from "@/demo/mockData"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -43,7 +44,7 @@ export default function Signup() {
             {
                 onSuccess: () => {
                     toast.success("Account created")
-                    navigate("/onboarding")
+                    navigate(isDemoModeEnabled() ? "/dashboard" : "/onboarding")
                 },
                 onError: (err) => {
                     toast.error(
