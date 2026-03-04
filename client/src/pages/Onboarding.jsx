@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label'
 
 export default function Onboarding() {
   const navigate = useNavigate()
-  const { data: businesses = [], isLoading: isCheckingBusinesses } = useBusinesses()
+  const { data: businesses = [], isLoading: isCheckingBusinesses } = useBusinesses({ includeDemo: false })
   const { mutate, isPending } = useAddBusiness()
 
   const {

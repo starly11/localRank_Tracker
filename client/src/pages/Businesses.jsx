@@ -10,6 +10,7 @@ import {
   refreshBusinessApi,
   updateBusinessApi,
 } from '@/api/businessApi'
+import { isDemoBusinessId } from '@/demo/mockData'
 import { useBusinesses } from '@/hooks/business/useBusinesses'
 import AppShell from '@/components/layout/AppShell'
 import BusinessCard from '@/components/business/BusinessCard'
@@ -131,12 +132,26 @@ export default function Businesses() {
             updatedText={formatRelativeTime(business.lastFetched || business.updatedAt)}
             onView={() => navigate(`/dashboard?businessId=${business._id}`)}
             onEdit={() => {
+              if (isDemoBusinessId(business._id)) {
+                toast('Demo business cannot be edited. Add a real business for live edits.')
+                return
+              }
               setEditingBusiness(business)
               setEditName(business.businessName)
               setIsEditOpen(true)
             }}
-            onRefresh={() => refreshBusiness({ businessId: business._id, force: true })}
+            onRefresh={() => {
+              if (isDemoBusinessId(business._id)) {
+                toast('Demo business is static. Add a real business to show live refresh.')
+                return
+              }
+              refreshBusiness({ businessId: business._id, force: true })
+            }}
             onDelete={() => {
+              if (isDemoBusinessId(business._id)) {
+                toast('Demo business cannot be deleted.')
+                return
+              }
               if (window.confirm(`Delete ${business.businessName}? This cannot be undone.`)) {
                 deleteBusiness(business._id)
               }

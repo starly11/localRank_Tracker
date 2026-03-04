@@ -6,7 +6,6 @@ import Snapshot from "../models/Snapshot.js";
 import Alert from "../models/Alerts.js";
 import crypto from "crypto";
 import { sendPasswordResetEmail } from "../services/emailService.js";
-import { ensureDemoDataForUser } from "../services/demoSeedService.js";
 
 
 const isSecureRequest = (req) => {
@@ -99,12 +98,6 @@ export const register = async (req, res) => {
             provider: 'local'
         });
 
-        try {
-            await ensureDemoDataForUser({ userId: newUser._id });
-        } catch (seedError) {
-            console.error("Demo seed failed on signup:", seedError?.message || seedError);
-        }
-
         // Generate token for new user
         const token = newUser.generateJWT();
 
@@ -171,12 +164,6 @@ export const login = async (req, res) => {
 
         setAuthCookie(req, res, token);
 
-        try {
-            await ensureDemoDataForUser({ userId: user._id });
-        } catch (seedError) {
-            console.error("Demo seed failed on login:", seedError?.message || seedError);
-        }
-
         return res.status(200).json({
             success: true,
             user: {
@@ -204,12 +191,6 @@ export const googleAuthCallback = async (req, res) => {
 
         if (!req.user) {
             return res.redirect(`${clientUrl}/login`);
-        }
-
-        try {
-            await ensureDemoDataForUser({ userId: req.user._id });
-        } catch (seedError) {
-            console.error("Demo seed failed on Google callback:", seedError?.message || seedError);
         }
 
         const token = req.user.generateJWT();
@@ -556,30 +537,6 @@ export const resetPassword = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Failed to reset password",
-        });
-    }
-};
-
-// ================================ Seed Demo Data ===================================
-export const seedDemoData = async (req, res) => {
-    try {
-        const force = Boolean(req.body?.force);
-        const result = await ensureDemoDataForUser({
-            userId: req.user.id,
-            force,
-        });
-
-        return res.status(200).json({
-            success: true,
-            message: result.seeded
-                ? "Demo data is ready for this account"
-                : "Skipped: this account already has data",
-            data: result,
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message || "Failed to seed demo data",
         });
     }
 };

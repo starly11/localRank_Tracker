@@ -8,10 +8,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
+import { isDemoBusinessId } from '@/demo/mockData'
 
 const getInitial = (name = '') => name.trim().charAt(0).toUpperCase() || 'B'
 
 export default function BusinessCard({ business, updatedText, onView, onEdit, onRefresh, onDelete }) {
+  const isDemo = isDemoBusinessId(business?._id)
+
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
@@ -19,7 +22,10 @@ export default function BusinessCard({ business, updatedText, onView, onEdit, on
           <div className="flex h-11 w-11 items-center justify-center rounded-full bg-accent/25 text-base font-semibold text-text-primary">
             {getInitial(business.businessName)}
           </div>
-          <CardTitle className="text-xl">{business.businessName}</CardTitle>
+          <div>
+            <CardTitle className="text-xl">{business.businessName}</CardTitle>
+            {isDemo ? <p className="text-xs text-accent">Demo business</p> : null}
+          </div>
         </div>
 
         <DropdownMenu>

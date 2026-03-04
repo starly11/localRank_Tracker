@@ -235,15 +235,6 @@ export const refreshBusinessForUser = async ({ userId, businessId, force = false
     return { success: false, status: 404, message: 'Business not found' };
   }
 
-  if (String(business.googlePlaceId || '').startsWith('demo_place_')) {
-    return {
-      success: true,
-      skipped: true,
-      message: 'This is seeded demo data. Add a real Google Maps business to run live fetching.',
-      data: business,
-    };
-  }
-
   if (!isRefreshStale(business, force)) {
     return {
       success: true,
